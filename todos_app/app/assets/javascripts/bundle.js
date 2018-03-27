@@ -1156,9 +1156,18 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.fetchTodos = exports.todoError = exports.removeTodo = exports.receiveTodo = exports.receiveTodos = exports.TODO_ERROR = exports.REMOVE_TODO = exports.RECEIVE_TODO = exports.RECEIVE_TODOS = undefined;
+
+var _todo_api_util = __webpack_require__(160);
+
+var APIUtil = _interopRequireWildcard(_todo_api_util);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 var RECEIVE_TODOS = exports.RECEIVE_TODOS = "RECEIVE_TODOS";
 var RECEIVE_TODO = exports.RECEIVE_TODO = "RECEIVE_TODO";
 var REMOVE_TODO = exports.REMOVE_TODO = "REMOVE_TODO";
+var TODO_ERROR = exports.TODO_ERROR = "TODO_ERROR";
 
 var receiveTodos = exports.receiveTodos = function receiveTodos(todos) {
   return {
@@ -1185,6 +1194,14 @@ var todoError = exports.todoError = function todoError(error) {
   return {
     type: TODO_ERROR,
     error: error
+  };
+};
+
+var fetchTodos = exports.fetchTodos = function fetchTodos() {
+  return function (dispatch) {
+    APIUtil.fetchTodos().then(function (res) {
+      return dispatch(receiveTodos(res));
+    });
   };
 };
 
@@ -2971,7 +2988,9 @@ var _store = __webpack_require__(76);
 
 var _store2 = _interopRequireDefault(_store);
 
-var _todo_api_util = __webpack_require__(160);
+var _thunk = __webpack_require__(187);
+
+var _thunk2 = _interopRequireDefault(_thunk);
 
 var _root = __webpack_require__(161);
 
@@ -2979,9 +2998,13 @@ var _root2 = _interopRequireDefault(_root);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import { fetchTodos } from './actions/todo_actions';
 document.addEventListener('DOMContentLoaded', function () {
   var preloadedState = localStorage.state ? JSON.parse(localStorage.state) : {};
   var store = (0, _store2.default)(preloadedState);
+
+  // window.store = store;
+  // window.fetchTodos = fetchTodos;
 
   var root = document.getElementById('content');
   _reactDom2.default.render(_react2.default.createElement(_root2.default, { store: store }), root);
@@ -24590,11 +24613,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _reactRedux = __webpack_require__(8);
 
+var _todo_actions = __webpack_require__(24);
+
 var _todo_list = __webpack_require__(177);
 
 var _todo_list2 = _interopRequireDefault(_todo_list);
-
-var _todo_actions = __webpack_require__(24);
 
 var _selectors = __webpack_require__(63);
 
@@ -24615,6 +24638,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     },
     receiveTodo: function receiveTodo(todo) {
       return dispatch((0, _todo_actions.receiveTodo)(todo));
+    },
+    fetchTodos: function fetchTodos() {
+      return dispatch((0, _todo_actions.fetchTodos)());
     }
   };
 };
@@ -24666,6 +24692,11 @@ var TodoList = function (_React$Component) {
   }
 
   _createClass(TodoList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.props.fetchTodos();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _props = this.props,
