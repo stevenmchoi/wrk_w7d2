@@ -20289,6 +20289,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(21);
 
+var _thunk = __webpack_require__(187);
+
+var _thunk2 = _interopRequireDefault(_thunk);
+
 var _root_reducer = __webpack_require__(91);
 
 var _root_reducer2 = _interopRequireDefault(_root_reducer);
@@ -20298,10 +20302,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var configureStore = function configureStore() {
   var preloadedState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  var store = (0, _redux.createStore)(_root_reducer2.default, preloadedState);
+  var store = (0, _redux.createStore)(_root_reducer2.default, preloadedState, (0, _redux.applyMiddleware)(_thunk2.default));
+
   store.subscribe(function () {
     localStorage.state = JSON.stringify(store.getState());
   });
+
   return store;
 };
 
@@ -25359,6 +25365,39 @@ var TodoForm = function (_React$Component) {
 ;
 
 exports.default = TodoForm;
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var thunk = function thunk(_ref) {
+  var dispatch = _ref.dispatch,
+      getState = _ref.getState;
+  return function (next) {
+    return function (action) {
+      if (typeof action === 'function') {
+        return action(dispatch, getState);
+      } else {
+        return next(action);
+      }
+    };
+  };
+};
+
+exports.default = thunk;
 
 /***/ })
 /******/ ]);
