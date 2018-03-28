@@ -7,3 +7,12 @@ export const fetchTodos = () => {
     datatype: 'json',
   });
 };
+
+export const createTodo = (todo) => {
+  return $.ajax({
+    method: 'POST',
+    url: '/api/todos',
+    data: { todo },
+    datatype: 'json',
+  });
+};

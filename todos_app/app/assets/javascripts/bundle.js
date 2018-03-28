@@ -1156,11 +1156,17 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchTodos = exports.todoError = exports.removeTodo = exports.receiveTodo = exports.receiveTodos = exports.TODO_ERROR = exports.REMOVE_TODO = exports.RECEIVE_TODO = exports.RECEIVE_TODOS = undefined;
+exports.createTodo = exports.fetchTodos = exports.todoError = exports.removeTodo = exports.receiveTodo = exports.receiveTodos = exports.TODO_ERROR = exports.REMOVE_TODO = exports.RECEIVE_TODO = exports.RECEIVE_TODOS = undefined;
 
 var _todo_api_util = __webpack_require__(160);
 
 var APIUtil = _interopRequireWildcard(_todo_api_util);
+
+var _thunk = __webpack_require__(187);
+
+var _thunk2 = _interopRequireDefault(_thunk);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1201,6 +1207,14 @@ var fetchTodos = exports.fetchTodos = function fetchTodos() {
   return function (dispatch) {
     APIUtil.fetchTodos().then(function (res) {
       return dispatch(receiveTodos(res));
+    });
+  };
+};
+
+var createTodo = exports.createTodo = function createTodo(todo) {
+  return function (dispatch) {
+    APIUtil.createTodo(todo).then(function (res) {
+      return dispatch(receiveTodo(res));
     });
   };
 };
@@ -23178,7 +23192,7 @@ exports.default = stepsReducer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchTodos = undefined;
+exports.createTodo = exports.fetchTodos = undefined;
 
 var _react = __webpack_require__(1);
 
@@ -23190,6 +23204,15 @@ var fetchTodos = exports.fetchTodos = function fetchTodos() {
   return $.ajax({
     method: 'GET',
     url: '/api/todos',
+    datatype: 'json'
+  });
+};
+
+var createTodo = exports.createTodo = function createTodo(todo) {
+  return $.ajax({
+    method: 'POST',
+    url: '/api/todos',
+    data: { todo: todo },
     datatype: 'json'
   });
 };
@@ -24613,11 +24636,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _reactRedux = __webpack_require__(8);
 
-var _todo_actions = __webpack_require__(24);
-
 var _todo_list = __webpack_require__(177);
 
 var _todo_list2 = _interopRequireDefault(_todo_list);
+
+var _todo_actions = __webpack_require__(24);
 
 var _selectors = __webpack_require__(63);
 
@@ -24636,8 +24659,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     receiveTodos: function receiveTodos() {
       return dispatch((0, _todo_actions.receiveTodos)());
     },
-    receiveTodo: function receiveTodo(todo) {
-      return dispatch((0, _todo_actions.receiveTodo)(todo));
+    // receiveTodo: todo => dispatch(receiveTodo(todo)),
+    createTodo: function createTodo(todo) {
+      return dispatch((0, _todo_actions.createTodo)(todo));
     },
     fetchTodos: function fetchTodos() {
       return dispatch((0, _todo_actions.fetchTodos)());
@@ -24701,6 +24725,7 @@ var TodoList = function (_React$Component) {
     value: function render() {
       var _props = this.props,
           todos = _props.todos,
+          createTodo = _props.createTodo,
           receiveTodo = _props.receiveTodo;
 
       var todoItems = todos.map(function (todo) {
@@ -24718,7 +24743,7 @@ var TodoList = function (_React$Component) {
           { className: 'todo-list' },
           todoItems
         ),
-        _react2.default.createElement(_todo_form2.default, { receiveTodo: receiveTodo })
+        _react2.default.createElement(_todo_form2.default, { createTodo: createTodo })
       );
     }
   }]);
@@ -25343,11 +25368,11 @@ var TodoForm = function (_React$Component) {
     value: function handleSubmit(e) {
       e.preventDefault();
       var todo = Object.assign({}, this.state, { id: (0, _id_generator.uniqueId)() });
-      this.props.receiveTodo(todo);
-      this.setState({
-        title: "",
-        body: ""
-      }); // reset form
+      this.props.createTodo(todo);
+      this.setState({ title: "", body: "" });
+      // this.props.createTodo(todo).then(
+      //   () => this.setState({title: "", body: ""}) // reset form
+      // );
     }
   }, {
     key: 'render',

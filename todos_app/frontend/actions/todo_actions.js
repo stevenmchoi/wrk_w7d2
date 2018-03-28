@@ -1,4 +1,5 @@
 import * as APIUtil from '../util/todo_api_util';
+import thunk from '../middleware/thunk';
 
 export const RECEIVE_TODOS = "RECEIVE_TODOS";
 export const RECEIVE_TODO = "RECEIVE_TODO";
@@ -28,5 +29,11 @@ export const todoError = error => ({
 export const fetchTodos = () => {
   return function (dispatch){
     APIUtil.fetchTodos().then( (res) => dispatch(receiveTodos(res)));
+  };
+};
+
+export const createTodo = (todo) => {
+  return function (dispatch) {
+    APIUtil.createTodo(todo).then( (res) => dispatch(receiveTodo(res)));
   };
 };
